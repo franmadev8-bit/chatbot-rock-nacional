@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  chatMessage ChatMessage[]
+
+  @@index([id, createdAt])
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  title     String
+  userId    String
+  createdAt DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([userId, createdAt])
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  content     String
+  chatId      String
+  role        MessageRole
+  createdAt   DateTime    @default(now())
+  tokens      Int?
+  chatMessage ChatMessage @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId, createdAt])
+}
+
+model ExpiredToken {
+  jti       String   @id
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+model Chunk {
+  id        String @id
+  topic     String
+  section   String
+  text      String
+  source    String
+  order     Int
+  embedding Bytes
+
+  @@index([topic])
+}
+
+model IndexMeta {
+  id          Int      @id @default(1)
+  model       String
+  dimensions  Int
+  totalChunks Int
+  createdAt   DateTime @default(now())
+}
+
+enum MessageRole {
+  user
+  assistant
+  system
+  tool
+}

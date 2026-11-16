@@ -1,0 +1,8 @@
+allowBuilds:
+  '@prisma/engines': false
+  better-sqlite3: false
+  prisma: false
+overrides:
+  tmp@<0.2.6: ^0.2.6
+  undici@<6.28.1: ^6.28.1
+  undici@>=4.0.0 <6.29.1: ^6.29.1
