@@ -8,8 +8,10 @@ import { ExpiredTokenRepository } from '../repositories/expired.token.repository
 import { CurrentUser } from '../middlewares/curremt.user.middleware.js';
 import type { JwtPayload } from '../types/jwt.payload.type.js';
 import { AuthGuard } from './auth.guard.js';
+import { ApiAuthController, ApiMe, ApiSignIn, ApiSignOut, ApiSignUp } from './auth.docs.js';
 
 @Controller('auth')
+@ApiAuthController()
 export class AuthController {
   private readonly cookieMaxAge: number;
   private readonly isProd: boolean;
@@ -24,6 +26,7 @@ export class AuthController {
   }
 
   @Post('sign-in')
+  @ApiSignIn()
   async signIn(@Res({ passthrough: true }) res: Response, @Body() auth: AuthDto) {
     const token = await this.auth.signIn(auth);
 
@@ -38,7 +41,7 @@ export class AuthController {
   }
 
   @Post('sign-up')
-  @HttpCode(201)
+  @ApiSignUp()
   async signUp(@Body() auth: SignUpDto) {
     await this.auth.signUp(auth);
   }
@@ -46,7 +49,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Post('sign-out')
-  @HttpCode(200)
+  @ApiSignOut()
   async signOut(@CurrentUser() user: JwtPayload, @Res({ passthrough: true }) res: Response) {
     await this.expired.revokeToken(user.jti, user.exp);
     res.clearCookie('access_token', {
@@ -57,9 +60,9 @@ export class AuthController {
     return { ok: true }
   }
 
-
   @Get('me')
   @UseGuards(AuthGuard)
+  @ApiMe()
   me(@CurrentUser('sub') userId: string) {
     return this.auth.me(userId);
   }

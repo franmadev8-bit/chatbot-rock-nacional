@@ -1,5 +1,6 @@
 allowBuilds:
   '@prisma/engines': false
+  '@scarf/scarf': set this to true or false
   better-sqlite3: false
   prisma: false
 overrides:

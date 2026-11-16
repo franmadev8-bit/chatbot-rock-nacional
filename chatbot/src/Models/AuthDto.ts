@@ -1,12 +1,17 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
 
 export class AuthDto {
 
-    @IsEmail({}, { message: 'Email Invalido.' })
-    @IsNotEmpty({ message: 'El email es obligatorio.' })
+    @ApiProperty({ example: 'francisco@mail.com', format: 'email' })
+    @IsEmail()
     email: string;
 
-    @IsNotEmpty({ message: 'Contraseña obligatoria' })
+
+    @ApiProperty({ example: 'MiClave123' })
+    @IsString()
+    @IsNotEmpty()
     password: string;
 
     constructor(init: Partial<AuthDto>) {

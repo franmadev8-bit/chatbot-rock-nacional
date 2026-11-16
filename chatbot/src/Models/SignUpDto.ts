@@ -1,16 +1,23 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+
 
 export class SignUpDto {
 
-    @IsEmail({}, { message: 'Email Invalido.' })
-    @IsNotEmpty({ message: 'El email es obligatorio.' })
+    @ApiProperty({ example: 'francisco@mail.com', format: 'email' })
+    @IsEmail()
     email: string;
 
-    @IsNotEmpty({ message: 'Debe introducir una contraseña.' })
+    @ApiProperty({ example: 'MiClave123', minLength: 8 })
+    @IsString()
+    @MinLength(8)
     password: string;
 
-    @IsNotEmpty({ message: 'El nombre es obligatorio.' })
-    name:string;
+    @ApiProperty({ example: 'Francisco', maxLength: 100 })
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(100)
+    name: string;
 
     constructor(init: Partial<SignUpDto>) {
         Object.assign(this, init);

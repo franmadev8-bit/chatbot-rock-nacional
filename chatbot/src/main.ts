@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,7 +14,18 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.use(cookieParser());
-  await app.listen(process.env.PORT ?? 3000);
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('Rock Nacional IA')
+      .setDescription('API del chatbot RAG sobre rock argentino')
+      .setVersion('1.0')
+      .addCookieAuth('access_token')
+      .build();
+
+    SwaggerModule.setup('docs', app, () => SwaggerModule.createDocument(app, config));
+
+    app.use(cookieParser());
+    await app.listen(process.env.PORT ?? 3000);
+  }
 }
 await bootstrap();
